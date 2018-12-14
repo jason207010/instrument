@@ -7,6 +7,7 @@ version '1.0'
 sourceCompatibility = 1.8
 
 repositories {
+    //使用阿里云的Maven仓库
     maven {url 'http://maven.aliyun.com/nexus/content/groups/public/'}
 }
 
@@ -15,17 +16,17 @@ dependencies {
     compile files('libs/tools.jar')
 }
 jar {
-    into('build/libs') {
-        from configurations.compile
-    }
     manifest {
         attributes "Agent-Class":"com.instrument.AgentMain","Premain-Class":"com.instrument.AgentMain","Can-Redefine-Classes":"true"
     }
 }
-
+//打包，同时导出所有依赖jar包
 task release(type: Copy)
 release.dependsOn build
 release {
     from configurations.runtime
     into 'build/libs'
+    doLast {
+        mkdir('build/libs/class')
+    }
 }

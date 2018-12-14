@@ -8,6 +8,7 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import java.io.File;
 import java.io.IOException;
+import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ public class ClassMonitor implements Runnable {
     @Override
     public void run() {
         long interval = TimeUnit.SECONDS.toMillis(5);
+        //运行java程序的目录
         String userDir = System.getProperty("user.dir");
         //要替换的class类文件放在class文件夹中，用FileAlterationMonitor监控该文件夹是否有新的class类文件添加进来
         //如果有则重新加载这个类
@@ -36,6 +38,7 @@ public class ClassMonitor implements Runnable {
             public void onFileCreate(File file) {
                 try {
                     System.out.printf("监控到新的class类文件%s\r\n", file.getName());
+                    /**加载代理，把.class文件路径传给{@link AgentMain#agentmain(String, Instrumentation)}**/
                     vm.loadAgent(jarFilePath, file.getPath());
                 } catch (Exception e) {
                     e.printStackTrace();
