@@ -1,0 +1,31 @@
+apply plugin:'java'
+apply plugin:'idea'
+
+group 'com.instrument'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven {url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+}
+
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile files('libs/tools.jar')
+}
+jar {
+    into('build/libs') {
+        from configurations.compile
+    }
+    manifest {
+        attributes "Agent-Class":"com.instrument.AgentMain","Premain-Class":"com.instrument.AgentMain","Can-Redefine-Classes":"true"
+    }
+}
+
+task release(type: Copy)
+release.dependsOn build
+release {
+    from configurations.runtime
+    into 'build/libs'
+}
